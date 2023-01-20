@@ -52,8 +52,7 @@ class GeometryData(BaseData):
 
     def filter_columns(self, d):
         """Filter some columns to reduce memory usage"""
-        #cols_to_remove = ['x', 'y', 'z', 'color']
-        cols_to_remove = ['z', 'color']
+        cols_to_remove = ['x', 'y', 'color']
         cols = [x for x in d.fields if x not in cols_to_remove]
         return d[cols]
 
@@ -272,8 +271,8 @@ class GeometryData(BaseData):
         """Performs data selection for performance."""
         with up.open(self.inpath) as f:
             tree = f[ os.path.join('hgcaltriggergeomtester', 'TreeTriggerCells') ]
-            if self.logger is not None:
-                self.logger.debug(tree.show())
+            #if self.logger is not None:
+                #self.logger.debug(tree.show())
             data = tree.arrays(self.readvars)
             sel = (data.zside==1) & (data.subdet==1)
             fields = data.fields[:]
@@ -289,7 +288,7 @@ class GeometryData(BaseData):
             #data = data.drop_duplicates(subset=[self.var.cu, self.var.cv, self.var.l])
             data[self.var.wv] = data.waferv
             data[self.var.wvs] = -1 * data.waferv
-            data[self.var.c] = "#8a2be2"
+            data[self.var.c] = np.full(len(data), "#8a2be2")
 
         return data
 
