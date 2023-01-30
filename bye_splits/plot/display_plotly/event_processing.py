@@ -28,12 +28,14 @@ data_particle = {
 geom_data = GeometryData(inname='test_triggergeom.root',
                          reprocess=False, logger=log)
 
+axis = dict(backgroundcolor="rgba(0,0,0,0)", gridcolor="white", showbackground=True, zerolinecolor="white",)
+
 def get_data(event, particles):
     ds_geom = geom_data.provide()
    
     if event is None:
-    	event = data_particle[particles].provide_event_number()
-     
+    	event = data_particle[particles].provide_event_numbers()
+    
     ds_ev = data_particle[particles].provide_event(event)
     ds_ev.rename(columns={'good_tc_waferu':'waferu', 'good_tc_waferv':'waferv',
                           'good_tc_cellu':'triggercellu', 'good_tc_cellv':'triggercellv',
@@ -53,19 +55,8 @@ def set_3dfigure(df):
     fig.update_layout(autosize=False, width=1800, height=850,
                       scene_aspectmode='manual',
                       scene_aspectratio=dict(x=1, y=1, z=1),
-                      scene=dict(xaxis=dict(backgroundcolor="rgba(0,0,0,0)",
-                                            gridcolor="white",
-                                            showbackground=True,
-                                            zerolinecolor="white",),
-                                 yaxis=dict(backgroundcolor="rgba(0,0,0,0)",
-                                            gridcolor="white",
-                                            showbackground=True,
-                                            zerolinecolor="white"),
-                                 zaxis=dict(backgroundcolor="rgba(0,0,0,0)",
-                                            gridcolor="white",
-                                            showbackground=True,
-                                            zerolinecolor="white",),),
-                      )
+                      scene=dict(xaxis=axis, yaxis=axis, zaxis=axis),
+                      ) 
 
     return fig
 
@@ -81,15 +72,7 @@ def set_2dfigure(df):
     fig.update_layout(autosize=False, width=1500, height=850,
                       scene_aspectmode='manual',
                       scene_aspectratio=dict(x=1, y=1),
-                      scene=dict(xaxis=dict(backgroundcolor="rgba(0,0,0,0)",
-                                            gridcolor="white",
-                                            showbackground=True,
-                                            zerolinecolor="white",),
-                                 yaxis=dict(backgroundcolor="rgba(0,0,0,0)",
-                                            gridcolor="white",
-                                            showbackground=True,
-                                            zerolinecolor="white"),
-                                            ),
+                      scene=dict(xaxis=axis, yaxis=axis),
                       )
 
     return fig

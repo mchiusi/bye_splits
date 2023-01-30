@@ -271,8 +271,8 @@ class GeometryData(BaseData):
         """Performs data selection for performance."""
         with up.open(self.inpath) as f:
             tree = f[ os.path.join('hgcaltriggergeomtester', 'TreeTriggerCells') ]
-            #if self.logger is not None:
-                #self.logger.debug(tree.show())
+            if self.logger is not None:
+                self.logger.debug(tree.show())
             data = tree.arrays(self.readvars)
             sel = (data.zside==1) & (data.subdet==1)
             fields = data.fields[:]

@@ -28,8 +28,8 @@ class EventDataParticle:
         self.data = EventData(in_name, self.tag + '_debug' * debug,
                               default_events, reprocess=reprocess, logger=logger)
 
-    def provide_event_number(self):
-        return self.data.provide_event_number()
+    def provide_event_numbers(self):
+        return self.data.provide_event_numbers()
    
     def provide_event(self, event):
         return self.data.provide_event(event)
