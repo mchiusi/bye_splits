@@ -8,17 +8,13 @@ import sys
 parent_dir = os.path.abspath(__file__ + 2 * '/..')
 sys.path.insert(0, parent_dir)
 
-from dash import Dash, dcc, html, Input, Output, State
+from dash import Dash, dcc, html, Input, Output, State, ctx
 from dash.exceptions import PreventUpdate
 import argparse
 
 import numpy as np
 import pandas as pd
 import event_processing as processing
-
-parser = argparse.ArgumentParser()
-parser.add_argument('-id','--username',type=str,default=os.getlogin())
-args = parser.parse_args()
 
 app = Dash(__name__)
 app.title = '3D Visualization' 
@@ -39,56 +35,68 @@ def render_content(page = '3D view'):
     elif page == 'Layer view':
         return processing.tab_layer_layout
 
-@app.callback([Output('graph3d', 'figure'), Output('event-display', 'children')],
-              [Input('particle', 'value'),  Input('tc-cl', 'value'),             Input('event-val', 'n_clicks'),
-               Input('mip', 'value'),       Input('event', 'value')])
-def update_event(particle, cluster, n_clicks, mip, event):
-    df, event  = processing.get_data(event, particle)
-    df = df.loc[df.mipPt >= mip]
 
+@app.callback(Output('event-display', 'children'), Output('out_slider', 'children'), Output('dataframe', 'data'),
+             [Input('particle', 'value'),  Input('tc-cl', 'value'),    Input('event-val', 'n_clicks'),
+              Input('submit-val', 'n_clicks'), Input('mip', 'value'),  State('event', 'value')])
+def update_event(particle, cluster, n_clicks, submit, mip, event):
+    df, event  = processing.get_data(event, particle)
+
+    slider = dcc.RangeSlider(df['layer'].min(),df['layer'].max(), value=[df['layer'].min(), df['layer'].max()], step=None,
+                       marks={int(layer) : {"label": str(layer)} for each, layer in enumerate(sorted(df['layer'].unique()))}, 
+                       id = 'slider-range')
+    return u'Event {} selected'.format(event), slider, df.reset_index().to_json(date_format='iso')
+
+@app.callback(Output('graph', 'figure'),  Output('slider-container', 'style'),
+              [Input('submit-layer', 'n_clicks'), Input('dataframe', 'data')], 
+              [Input('layer_sel', 'value'), State('tc-cl', 'value'), State('mip', 'value'), 
+               State('slider-range', 'value'), State('page', 'value')])
+def make_graph(submit, data, layer, cluster, mip, slider_value, page):
+    df = pd.read_json(data, orient='records')
+    df_sel = df.loc[df.mipPt >= mip]
+    
+    if layer == 'layer selection':
+        df_sel = df_sel[(df_sel.layer >= slider_value[0]) & (df_sel.layer <= slider_value[1])]
+    
     if cluster == 'cluster':
-        df_no_cluster = df.loc[df.tc_cluster_id == 0]
-        df_cluster    = df.loc[df.tc_cluster_id != 0]
+        df_no_cluster = df_sel.loc[df_sel.tc_cluster_id == 0]
+        df_cluster    = df_sel.loc[df_sel.tc_cluster_id != 0]
         fig = processing.set_3dfigure(df_cluster)
         fig = processing.update_3dfigure(fig, df_no_cluster)
     else:
-        fig = processing.set_3dfigure(df)
-    return fig, u'Event {} displayed'.format(event)
+        fig = processing.set_3dfigure(df_sel)
+    
+    if layer == 'display the entire event':
+        status_slider = {'display': 'none', 'width':'1'}
+    else: 
+        status_slider = {'display': 'block', 'width':'1'}
+    return fig, status_slider
 
 
-@app.callback(Output('event_display_out', 'children'), Output('out_slider', 'children'), Output('dataframe', 'data'),
-    Input('particle', 'value'), Input('tc-cl', 'value'), Input('event-val', 'n_clicks'), Input('mip', 'value'),
-    Input('event', 'value'), Input('page', 'value') )
-def update_event(particle, cluster, n_clicks, mip, event, page):
-    df, event  = processing.get_data(event, particle)
-    df = df.loc[df.mipPt >= mip]
-
-    if page == 'Layer view':
-    	slider = dcc.Slider(df['layer'].min(),df['layer'].max(), value=df['layer'].min(), step=None,
-	                   marks={int(layer) : {"label": str(layer)} for each, layer in enumerate(sorted(df['layer'].unique()))}, 
-                           id = 'slider-range', included=False)
-    	return u'Event {} selected'.format(event), slider, df.reset_index().to_json(date_format='iso')
-    raise PreventUpdate
-
-@app.callback(Output('graph', 'figure'), Output('which', 'children'), 
-    [Input('page', 'value'), Input('dataframe', 'data'), Input('slider-range', 'value'),
-    Input('particle', 'value'), Input('tc-cl', 'value'), Input('mip', 'value')])
-def update_output(page, data, slider_value, particle, cluster, mip):
+@app.callback(Output('graph2d', 'figure'),
+              [Input('dataframe', 'data'), Input('slider-range', 'value')],
+              [State('tc-cl', 'value'), State('mip', 'value'), State('page', 'value')])
+def make_graph(data, slider_value, cluster, mip, page):
     df = pd.read_json(data, orient='records')
-    df_layer = df[df.layer == slider_value]
+    df_sel = df.loc[df.mipPt >= mip]
 
-    if page == 'Layer view':
-        if cluster == 'cluster':
-            df_no_cluster = df_layer.loc[df_layer.tc_cluster_id == 0]
-            df_cluster    = df_layer.loc[df_layer.tc_cluster_id != 0]
-            fig = processing.set_2dfigure(df_cluster)
-            fig = processing.update_2dfigure(fig, df_no_cluster)
-        else:
-            fig = processing.set_2dfigure(df_layer)
-        return fig, u'Layer {} displayed'.format(slider_value) 
-    raise PreventUpdate
+    df_sel = df_sel[df_sel.layer == slider_value[1]]
+    if cluster == 'cluster':
+        df_no_cluster = df_sel.loc[df_sel.tc_cluster_id == 0]
+        df_cluster    = df_sel.loc[df_sel.tc_cluster_id != 0]
+        fig = processing.set_2dfigure(df_cluster)
+        fig = processing.update_2dfigure(fig, df_no_cluster)
+    else:
+        fig = processing.set_2dfigure(df_sel)
+    return fig
 
 if __name__ == '__main__':
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-id','--username',type=str,default=os.getlogin())
+    parser.add_argument('--host',type=str,default='llruicms01.in2p3.fr')
+    parser.add_argument('--port',type=int,default=8004)
+    args = parser.parse_args()
+    
     app.run_server(debug=True,
-                   host='llruicms01.in2p3.fr',
-                   port=8004)
+                   host=args.host,
+                   port=args.port)

@@ -30,7 +30,7 @@ def produce_3dplot(df, opacity=1, surfaceaxis=2):
                              cmin = df.mipPt.min(),
                              cmax = df.mipPt.max(),
                              showscale=True,
-                             colorbar=dict(title="Energy [MIP_T]", ticks="outside", x=0.8)
+                             colorbar=dict(title="Energy [MIP Pt]", ticks="outside", x=0.8)
                          ))
         listdata.append(datum)
     return listdata
@@ -44,14 +44,4 @@ def produce_2dplot(df, opacity=1):
         datum = go.Scatter(x=x1, y=y1, opacity=opacity,mode="lines",fill='toself', fillcolor=i[4],
                           line_color='black',marker_line_color="black",  text=('Energy: '+str(round(i[5],2))))
         listdata.append(datum)
-    if opacity == 1:
-        datum = go.Scatter(x=[None], y=[None], mode="markers", marker=dict(
-                             colorscale='viridis',
-                             cmin = df.mipPt.min(),
-                             cmax = df.mipPt.max(),
-                             showscale=True,
-                             colorbar=dict(title="Energy [MIP_T]", ticks="outside", x=1.2)
-                         ))
-        listdata.append(datum)
-
     return listdata

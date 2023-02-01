@@ -24,7 +24,8 @@ log = logging.getLogger(__name__)
 data_part_opt = dict(tag='v2', reprocess=False, debug=True, logger=log)
 data_particle = {
     'photons': EventDataParticle(particles='photons', **data_part_opt),
-    'electrons': EventDataParticle(particles='electrons', **data_part_opt)}
+    'electrons': EventDataParticle(particles='electrons', **data_part_opt),
+    'pions': EventDataParticle(particles='pions', **data_part_opt)}
 geom_data = GeometryData(inname='test_triggergeom.root',
                          reprocess=False, logger=log)
 
@@ -37,7 +38,15 @@ def get_data(event, particles):
     	event = data_particle[particles].provide_event_numbers()
     
     ds_ev = data_particle[particles].provide_event(event)
-    ds_ev.rename(columns={'good_tc_waferu':'waferu', 'good_tc_waferv':'waferv',
+   
+    if particles == 'pions':
+       ds_ev.rename(columns={'tc_waferu':'waferu', 'tc_waferv':'waferv',
+                          'tc_cellu':'triggercellu', 'tc_cellv':'triggercellv',
+                          'tc_layer':'layer', 'tc_mipPt':'mipPt',
+                          'tc_cluster_id':'tc_cluster_id'},
+                inplace=True)
+    else:
+       ds_ev.rename(columns={'good_tc_waferu':'waferu', 'good_tc_waferv':'waferv',
                           'good_tc_cellu':'triggercellu', 'good_tc_cellv':'triggercellv',
                           'good_tc_layer':'layer', 'good_tc_mipPt':'mipPt',
                           'good_tc_cluster_id':'tc_cluster_id'},
@@ -87,40 +96,48 @@ def update_2dfigure(fig, df):
 tab_3d_layout = html.Div([
     html.H3('3D TC distribution'),
     html.Div([
-        html.Div([dcc.Dropdown(['photons', 'pions'], 'photons', id='particle')], style={'width':'15%'}),
+        html.Div([dcc.Dropdown(['photons', 'electrons', 'pions'], 'photons', id='particle')], style={'width':'15%'}),
         html.Div([dcc.Dropdown(['trigger cells', 'cluster'], 'trigger cells', id='tc-cl')], style={"margin-left": "15px", 'width':'15%'}),
+        html.Div(id='space-slider', style={'width':'15%'}),
+        html.Div([dcc.Dropdown(['display the entire event', 'layer selection'], 'display the entire event', id='layer_sel')], style={"margin-left": "15px", 'width':'15%'}),
     ], style={'display': 'flex', 'flex-direction': 'row'}),
     html.Div([
-        html.Div(["Threshold in [MIP_T]: ", dcc.Input(id='mip', value=1, type='number', step=0.1)], style={'padding': 10}),
+        html.Div(["Threshold in [MIP Pt]: ", dcc.Input(id='mip', value=1, type='number', step=0.1)], style={'padding': 10}),
         html.Div(["Select manually an event: ", dcc.Input(id='event', value=None, type='number')], style={'padding': 10, 'flex': 1}),
+        html.Div(id='slider-container', children=html.Div(id='out_slider', style={'width':'95%'}), style= {'display': 'block', 'width':'30%'}),
+        html.Div(id='space-slider', style={'width':'30%'}),
     ], style={'display': 'flex', 'flex-direction': 'row'}),
     html.Br(),
     html.Div([
-        html.Button(children='Change event', id='event-val', n_clicks=0),
+        html.Button(children='Random event', id='event-val', n_clicks=0),
+        html.Button(children='Submit selected event', id='submit-val', n_clicks=0),
+        html.Button(children='Submit selected layer(s)', id='submit-layer', n_clicks=0),
         html.Div(id='event-display', style={'display':'inline-block', "margin-left": "15px"}),
-        #html.Div(id='gen-part', style={'display':'inline-block', "margin-left": "15px"}),
+        html.Div(id='which', style={'display':'inline-block', "margin-left": "15px"}),
     ]),
-    dcc.Graph(id='graph3d'),
+    dcc.Graph(id='graph'),
+    dcc.Store(id='dataframe'),
     ])
 
 tab_layer_layout = html.Div([
     html.H3('2D TC distribution - Layer view'),
     html.Div([
-        html.Div([dcc.Dropdown(['photons', 'pions'], 'photons', id='particle')], style={'width':'15%'}),
+        html.Div([dcc.Dropdown(['photons', 'electrons', 'pions'], 'photons', id='particle')], style={'width':'15%'}),
         html.Div([dcc.Dropdown(['trigger cells', 'cluster'], 'trigger cells', id='tc-cl')], style={"margin-left": "15px", 'width':'15%'}),
         html.Br(),
         html.Div(id='out_slider', style={'width':'30%'}),
         html.Div(id='layer_slider_container', style={'width':'30%'}),
     ], style={'display': 'flex', 'flex-direction': 'row'}),
     html.Div([
-        html.Div(["Threshold in [MIP_T]: ", dcc.Input(id='mip', value=1, type='number', step=0.1)], style={'padding': 10}),
+        html.Div(["Threshold in [MIP Pt]: ", dcc.Input(id='mip', value=1, type='number', step=0.1)], style={'padding': 10}),
         html.Div(["Select manually an event: ", dcc.Input(id='event', value=None, type='number')], style={'padding': 10, 'flex': 1}),
     ], style={'display': 'flex', 'flex-direction': 'row'}),
     html.Br(),
     html.Div([
-        html.Button(children='Change event', id='event-val', n_clicks=0),
-        html.Div(id='event_display_out', style={'display':'inline-block', "margin-left": "15px"}),
+        html.Button(children='Random event', id='event-val', n_clicks=0),
+        html.Button(children='Submit selected event', id='submit-val', n_clicks=0),
+        html.Div(id='event-display', style={'display':'inline-block', "margin-left": "15px"}),
         html.Div(id='which', style={'display':'inline-block', "margin-left": "15px"}),
     ]),
-    dcc.Graph(id='graph'),
+    dcc.Graph(id='graph2d'),
     dcc.Store(id='dataframe')])

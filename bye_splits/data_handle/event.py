@@ -24,6 +24,7 @@ class EventData(BaseData):
         with open(params.viz_kw['CfgDataPath'], 'r') as afile:
             cfg = yaml.safe_load(afile)
             self.var = cfg['varEvents']
+            self.var_pions = cfg['varEvents_pions']
             
         self.cache = None
         self.events = default_events
@@ -53,13 +54,9 @@ class EventData(BaseData):
         #self.cache = self.cache.persist() only for dask dataframes
 
     def get_event_numbers(self):
-        """Read event numbers from parquet to cache"""
+        """Read event numbers from parquet file"""
         ds = ak.from_parquet(self.outpath)
-        ds = ak.to_dataframe(ds)
-        if ds.empty:
-            raise RuntimeError('Empty dataframe: no events.')
-
-        return np.unique(ds['event'].values)
+        return ds.event
 
     def provide(self):
         print('Providing event {} data...'.format(self.tag))
@@ -83,10 +80,18 @@ class EventData(BaseData):
         adir = 'FloatingpointMixedbcstcrealsig4DummyHistomaxxydr015GenmatchGenclustersntuple'
         atree = 'HGCalTriggerNtuple'
 
+        print(self.inpath)
         with up.open(str(self.inpath), array_cache='550 MB', num_workers=8) as f:
             # print(tree.show())
             tree = f[adir + '/' + atree]
-            data = tree.arrays(filter_name='/' + '|'.join(self.var.values()) + '/',
+            if self.inpath == '/eos/user/m/mchiusi/visualization/skim_small_pions_0PU_bc_stc_hadd.root':
+              data = tree.arrays(filter_name='/' + '|'.join(self.var_pions.values()) + '/',
+                               library='ak',
+                               #entry_stop=50, debug
+                               )
+              print('qui')
+            else:
+              data = tree.arrays(filter_name='/' + '|'.join(self.var.values()) + '/',
                                library='ak',
                                #entry_stop=50, debug
                                )
