@@ -33,7 +33,7 @@ axis = dict(backgroundcolor="rgba(0,0,0,0)", gridcolor="white", showbackground=T
 
 def get_data(event, particles):
     ds_geom = geom_data.provide(library='plotly')
-   
+
     if event is None:
     	event = data_particle[particles].provide_event_numbers()
     
