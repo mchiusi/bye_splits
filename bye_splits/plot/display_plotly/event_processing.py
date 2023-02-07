@@ -32,21 +32,14 @@ geom_data = GeometryData(inname='test_triggergeom.root',
 axis = dict(backgroundcolor="rgba(0,0,0,0)", gridcolor="white", showbackground=True, zerolinecolor="white",)
 
 def get_data(event, particles):
-    ds_geom = geom_data.provide()
-   
+    ds_geom = geom_data.provide(library='plotly')
+
     if event is None:
     	event = data_particle[particles].provide_event_numbers()
     
     ds_ev = data_particle[particles].provide_event(event)
    
-    if particles == 'pions':
-       ds_ev.rename(columns={'tc_waferu':'waferu', 'tc_waferv':'waferv',
-                          'tc_cellu':'triggercellu', 'tc_cellv':'triggercellv',
-                          'tc_layer':'layer', 'tc_mipPt':'mipPt',
-                          'tc_cluster_id':'tc_cluster_id'},
-                inplace=True)
-    else:
-       ds_ev.rename(columns={'good_tc_waferu':'waferu', 'good_tc_waferv':'waferv',
+    ds_ev.rename(columns={'good_tc_waferu':'waferu', 'good_tc_waferv':'waferv',
                           'good_tc_cellu':'triggercellu', 'good_tc_cellv':'triggercellv',
                           'good_tc_layer':'layer', 'good_tc_mipPt':'mipPt',
                           'good_tc_cluster_id':'tc_cluster_id'},
@@ -64,7 +57,8 @@ def set_3dfigure(df):
     fig.update_layout(autosize=False, width=1800, height=850,
                       scene_aspectmode='manual',
                       scene_aspectratio=dict(x=1, y=1, z=1),
-                      scene=dict(xaxis=axis, yaxis=axis, zaxis=axis),
+                      scene=dict(xaxis=axis, yaxis=axis, zaxis=axis,
+                                 xaxis_title="x [cm]",yaxis_title="y [cm]",zaxis_title="z [cm]"),
                       ) 
 
     return fig
@@ -81,7 +75,8 @@ def set_2dfigure(df):
     fig.update_layout(autosize=False, width=1500, height=850,
                       scene_aspectmode='manual',
                       scene_aspectratio=dict(x=1, y=1),
-                      scene=dict(xaxis=axis, yaxis=axis),
+                      scene=dict(xaxis=axis, yaxis=axis, 
+                                 xaxis_title="x [cm]",yaxis_title="y [cm]"),
                       )
 
     return fig
@@ -99,7 +94,7 @@ tab_3d_layout = html.Div([
         html.Div([dcc.Dropdown(['photons', 'electrons', 'pions'], 'photons', id='particle')], style={'width':'15%'}),
         html.Div([dcc.Dropdown(['trigger cells', 'cluster'], 'trigger cells', id='tc-cl')], style={"margin-left": "15px", 'width':'15%'}),
         html.Div(id='space-slider', style={'width':'15%'}),
-        html.Div([dcc.Dropdown(['display the entire event', 'layer selection'], 'display the entire event', id='layer_sel')], style={"margin-left": "15px", 'width':'15%'}),
+        html.Div([dcc.Dropdown(['display the entire event', 'layer selection'], 'layer selection', id='layer_sel')], style={"margin-left": "15px", 'width':'15%'}),
     ], style={'display': 'flex', 'flex-direction': 'row'}),
     html.Div([
         html.Div(["Threshold in [MIP Pt]: ", dcc.Input(id='mip', value=1, type='number', step=0.1)], style={'padding': 10}),

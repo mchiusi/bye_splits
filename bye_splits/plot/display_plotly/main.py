@@ -53,14 +53,14 @@ def update_event(particle, cluster, n_clicks, submit, mip, event):
                State('slider-range', 'value'), State('page', 'value')])
 def make_graph(submit, data, layer, cluster, mip, slider_value, page):
     df = pd.read_json(data, orient='records')
-    df_sel = df.loc[df.mipPt >= mip]
+    df_sel = df[df.mipPt >= mip]
     
     if layer == 'layer selection':
         df_sel = df_sel[(df_sel.layer >= slider_value[0]) & (df_sel.layer <= slider_value[1])]
     
     if cluster == 'cluster':
-        df_no_cluster = df_sel.loc[df_sel.tc_cluster_id == 0]
-        df_cluster    = df_sel.loc[df_sel.tc_cluster_id != 0]
+        df_no_cluster = df_sel[df_sel.tc_cluster_id == 0]
+        df_cluster    = df_sel[df_sel.tc_cluster_id != 0]
         fig = processing.set_3dfigure(df_cluster)
         fig = processing.update_3dfigure(fig, df_no_cluster)
     else:
@@ -82,8 +82,8 @@ def make_graph(data, slider_value, cluster, mip, page):
 
     df_sel = df_sel[df_sel.layer == slider_value[1]]
     if cluster == 'cluster':
-        df_no_cluster = df_sel.loc[df_sel.tc_cluster_id == 0]
-        df_cluster    = df_sel.loc[df_sel.tc_cluster_id != 0]
+        df_no_cluster = df_sel[df_sel.tc_cluster_id == 0]
+        df_cluster    = df_sel[df_sel.tc_cluster_id != 0]
         fig = processing.set_2dfigure(df_cluster)
         fig = processing.update_2dfigure(fig, df_no_cluster)
     else:

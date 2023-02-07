@@ -1,6 +1,10 @@
 # coding: utf-8
 
+<<<<<<< HEAD
 _all_ = [ 'EventData' ]
+=======
+_all_ = []
+>>>>>>> a42e0d13958855c86de520b48f20623198487e29
 
 import os
 from pathlib import Path
@@ -16,8 +20,8 @@ def produce_3dplot(df, opacity=1, surfaceaxis=2):
     array_data = df[['diamond_x', 'diamond_y', 'z', 'tc_x', 'tc_y', 'colors', 'mipPt']].to_numpy()
     listdata = []
     for j,i in enumerate(array_data):
-        x1 = np.append(i[0][0][0],i[0][0][0][0])
-        y1 = np.append(i[1][0][0],i[1][0][0][0])
+        x1 = np.append(i[0],i[0][0])
+        y1 = np.append(i[1],i[1][0])
         z1 = np.array(int(len(x1)+1) * [i[2]])
         datum = go.Scatter3d(x=x1, y=y1, z=z1, opacity=opacity,mode="lines",
                             surfaceaxis=surfaceaxis,surfacecolor=i[5],marker=dict(color="black", showscale=True),
@@ -39,8 +43,8 @@ def produce_2dplot(df, opacity=1):
     array_data = df[['diamond_x', 'diamond_y', 'tc_x', 'tc_y', 'colors','mipPt']].to_numpy()
     listdata = []
     for j,i in enumerate(array_data):
-        x1 = np.append(i[0][0][0],i[0][0][0][0]) 
-        y1 = np.append(i[1][0][0],i[1][0][0][0])
+        x1 = np.append(i[0],i[0][0]) 
+        y1 = np.append(i[1],i[1][0])
         datum = go.Scatter(x=x1, y=y1, opacity=opacity,mode="lines",fill='toself', fillcolor=i[4],
                           line_color='black',marker_line_color="black",  text=('Energy: '+str(round(i[5],2))))
         listdata.append(datum)

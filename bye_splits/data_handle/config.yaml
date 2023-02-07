@@ -17,16 +17,6 @@ varEvents:
     en: 'good_tc_mipPt'
     cluster: 'good_tc_cluster_id'
 
-varEvents_pions:
-    event: 'event'
-    wu: 'tc_waferu'
-    wv: 'tc_waferv'
-    l:  'tc_layer'
-    cv: 'tc_cellu'
-    cu: 'tc_cellv'
-    en: 'tc_mipPt'
-    cluster: 'tc_cluster_id'
-
 varGeometry:
     wu: 'waferu'
     wv: 'waferv'
