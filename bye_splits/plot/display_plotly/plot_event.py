@@ -1,10 +1,6 @@
 # coding: utf-8
 
-<<<<<<< HEAD
-_all_ = [ 'EventData' ]
-=======
 _all_ = []
->>>>>>> a42e0d13958855c86de520b48f20623198487e29
 
 import os
 from pathlib import Path
