@@ -24,7 +24,6 @@ class EventData(BaseData):
         with open(params.viz_kw['CfgDataPath'], 'r') as afile:
             cfg = yaml.safe_load(afile)
             self.var = cfg['varEvents']
-            self.var_pions = cfg['varEvents_pions']
             
         self.cache = None
         self.events = default_events
@@ -84,14 +83,7 @@ class EventData(BaseData):
         with up.open(str(self.inpath), array_cache='550 MB', num_workers=8) as f:
             # print(tree.show())
             tree = f[adir + '/' + atree]
-            if self.inpath == '/eos/user/m/mchiusi/visualization/skim_small_pions_0PU_bc_stc_hadd.root':
-              data = tree.arrays(filter_name='/' + '|'.join(self.var_pions.values()) + '/',
-                               library='ak',
-                               #entry_stop=50, debug
-                               )
-              print('qui')
-            else:
-              data = tree.arrays(filter_name='/' + '|'.join(self.var.values()) + '/',
+            data = tree.arrays(filter_name='/' + '|'.join(self.var.values()) + '/',
                                library='ak',
                                #entry_stop=50, debug
                                )
