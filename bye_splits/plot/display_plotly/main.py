@@ -92,7 +92,6 @@ def make_graph(data, slider_value, cluster, mip, page):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('-id','--username',type=str,default=os.getlogin())
     parser.add_argument('--host',type=str,default='llruicms01.in2p3.fr')
     parser.add_argument('--port',type=int,default=8004)
     args = parser.parse_args()
