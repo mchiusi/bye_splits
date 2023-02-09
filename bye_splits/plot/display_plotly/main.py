@@ -38,7 +38,8 @@ def render_content(page = '3D view'):
 
 @app.callback(Output('event-display', 'children'), Output('out_slider', 'children'), Output('dataframe', 'data'),
              [Input('particle', 'value'),  Input('tc-cl', 'value'),    Input('event-val', 'n_clicks'),
-              Input('submit-val', 'n_clicks'), Input('mip', 'value'),  State('event', 'value')])
+              Input('submit-val', 'n_clicks'), Input('mip', 'value'),  State('event', 'value')], 
+              prevent_initial_call=True)
 def update_event(particle, cluster, n_clicks, submit, mip, event):
     df, event  = processing.get_data(event, particle)
 
@@ -50,7 +51,8 @@ def update_event(particle, cluster, n_clicks, submit, mip, event):
 @app.callback(Output('graph', 'figure'),  Output('slider-container', 'style'),
               [Input('submit-layer', 'n_clicks'), Input('dataframe', 'data')], 
               [Input('layer_sel', 'value'), State('tc-cl', 'value'), State('mip', 'value'), 
-               State('slider-range', 'value'), State('page', 'value')])
+               State('slider-range', 'value'), State('page', 'value')], 
+               prevent_initial_call=True)
 def make_graph(submit, data, layer, cluster, mip, slider_value, page):
     df = pd.read_json(data, orient='records')
     df_sel = df[df.mipPt >= mip]
@@ -75,7 +77,8 @@ def make_graph(submit, data, layer, cluster, mip, slider_value, page):
 
 @app.callback(Output('graph2d', 'figure'),
               [Input('dataframe', 'data'), Input('slider-range', 'value')],
-              [State('tc-cl', 'value'), State('mip', 'value'), State('page', 'value')])
+              [State('tc-cl', 'value'), State('mip', 'value'), State('page', 'value')], 
+              prevent_initial_call=True)
 def make_graph(data, slider_value, cluster, mip, page):
     df = pd.read_json(data, orient='records')
     df_sel = df.loc[df.mipPt >= mip]
