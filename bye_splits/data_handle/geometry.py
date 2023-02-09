@@ -261,9 +261,10 @@ class GeometryData(BaseData):
                 self.logger.info('Retrieving geometry data...')
             ds = ak.from_parquet(self.outpath)
             ds = self.filter_columns(ds)
-            ds = ak.to_dataframe(ds)
-            ds = self.region_selection(ds, region)
-            self.dataset = self.prepare_for_display(ds, library)
+            self.dataset = ak.to_dataframe(ds)
+            
+        self.dataset = self.region_selection(self.dataset, region)
+        self.dataset = self.prepare_for_display(self.dataset, library)
         
         return self.dataset
 
