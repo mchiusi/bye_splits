@@ -37,15 +37,16 @@ def render_content(page = '3D view'):
 
 @app.callback([Output('event-display','children'),Output('out_slider','children'), 
               Output('dataframe','data'), Output('event','value')],
-             [Input('particle','value'),Input('tc-cl','value'),
-              Input('event-val','n_clicks'),Input('submit-val','n_clicks')],
+             [Input('particle','value'),Input('event-val','n_clicks'),
+              Input('submit-val','n_clicks')],
              [State('event','value')])
-def update_event(particle, cluster, n_click, submit_event, event):
+def update_event(particle, n_click, submit_event, event):
     button_clicked = ctx.triggered_id
 
-    if button_clicked == 'event-val':
+    if button_clicked != 'submit-val':
         df, event  = processing.get_data(event=None, particles=particle)
     else:
+        assert event == None, '''Please select manually an event or click on 'Random event'.'''
         df, event  = processing.get_data(event, particle)
 
     slider = dcc.RangeSlider(df['layer'].min(),df['layer'].max(), 
@@ -58,8 +59,8 @@ def update_event(particle, cluster, n_click, submit_event, event):
 
 @app.callback(Output('graph', 'figure'),  Output('slider-container', 'style'),
               [Input('dataframe', 'data'), Input('slider-range', 'value'), 
-               Input('layer_sel', 'value'), Input('mip', 'value')],
-              [State('tc-cl', 'value')])
+               Input('layer_sel', 'value'), Input('mip', 'value'),
+               Input('tc-cl', 'value')])
 def make_graph(data, slider_value, layer, mip, cluster):
     assert float(mip) >= 0.5, 'mip\u209C value out of range. Minimum value 0.5 !'
     df = pd.read_json(data, orient='records')

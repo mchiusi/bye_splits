@@ -96,9 +96,9 @@ tab_3d_layout = html.Div([
     html.H3('3D TC distribution'),
     html.Div([
         html.Div([dcc.Dropdown(['photons', 'electrons', 'pions'], 'photons', id='particle')], style={'width':'15%'}),
-        html.Div([dcc.Dropdown(['trigger cells', 'cluster'], 'trigger cells', id='tc-cl')], style={"margin-left": "15px", 'width':'15%'}),
+        html.Div([dcc.Dropdown(['trigger cells', 'cluster trigger cells'], 'trigger cells',id='tc-cl')], style={"margin-left": "15px", 'width':'15%'}),
         html.Div(id='space-slider', style={'width':'15%'}),
-        html.Div([dcc.Dropdown(['display the entire event', 'layer selection'], 'layer selection', id='layer_sel')], style={"margin-left": "15px", 'width':'15%'}),
+        html.Div([dcc.Dropdown(['display the entire event', 'layer selection'], 'display the entire event', id='layer_sel')], style={"margin-left": "15px", 'width':'15%'}),
     ], style={'display': 'flex', 'flex-direction': 'row'}),
     html.Div([
         html.Div(["Threshold in [MIP Pt]: ", dcc.Input(id='mip', value=1, type='number', step=0.1)], style={'padding': 10}),
@@ -110,7 +110,6 @@ tab_3d_layout = html.Div([
     html.Div([
         html.Button(children='Random event', id='event-val', n_clicks=0),
         html.Button(children='Submit selected event', id='submit-val', n_clicks=0),
-        html.Button(children='Submit selected layer(s)', id='submit-layer', n_clicks=0),
         html.Div(id='event-display', style={'display':'inline-block', "margin-left": "15px"}),
         html.Div(id='which', style={'display':'inline-block', "margin-left": "15px"}),
     ]),
