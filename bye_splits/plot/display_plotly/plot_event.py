@@ -12,14 +12,14 @@ import numpy as np
 import pandas as pd
 import plotly.graph_objects as go
 
-def produce_3dplot(df, opacity=1, surfaceaxis=2):
+def produce_3dplot(df, opacity=1, surfaceaxis=0):
     array_data = df[['diamond_x', 'diamond_y', 'z', 'tc_x', 'tc_y', 'colors', 'mipPt']].to_numpy()
     listdata = []
     for j,i in enumerate(array_data):
         x1 = np.append(i[0],i[0][0])
         y1 = np.append(i[1],i[1][0])
         z1 = np.array(int(len(x1)+1) * [i[2]])
-        datum = go.Scatter3d(x=x1, y=y1, z=z1, opacity=opacity,mode="lines",
+        datum = go.Scatter3d(x=z1, y=y1, z=x1, opacity=opacity,mode="lines",
                             surfaceaxis=surfaceaxis,surfacecolor=i[5],marker=dict(color="black", showscale=True),
                             text=('Energy: '+str(round(i[6],2)))
                             )
@@ -30,7 +30,7 @@ def produce_3dplot(df, opacity=1, surfaceaxis=2):
                              cmin = df.mipPt.min(),
                              cmax = df.mipPt.max(),
                              showscale=True,
-                             colorbar=dict(title="Energy [MIP Pt]", ticks="outside", x=0.8)
+                             colorbar=dict(title="Energy [mip\u209C]", ticks="outside", x=0.8)
                          ))
         listdata.append(datum)
     return listdata

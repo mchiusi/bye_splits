@@ -58,7 +58,9 @@ def set_3dfigure(df):
                       scene_aspectmode='manual',
                       scene_aspectratio=dict(x=1, y=1, z=1),
                       scene=dict(xaxis=axis, yaxis=axis, zaxis=axis,
-                                 xaxis_title="x [cm]",yaxis_title="y [cm]",zaxis_title="z [cm]"),
+                                 xaxis_title="z [cm]",yaxis_title="y [cm]",zaxis_title="x [cm]",
+                                 xaxis_showspikes=False,yaxis_showspikes=False,zaxis_showspikes=False),
+                      showlegend=False,
                       ) 
 
     return fig
@@ -76,7 +78,9 @@ def set_2dfigure(df):
                       scene_aspectmode='manual',
                       scene_aspectratio=dict(x=1, y=1),
                       scene=dict(xaxis=axis, yaxis=axis, 
-                                 xaxis_title="x [cm]",yaxis_title="y [cm]"),
+                                 xaxis_title="x [cm]",yaxis_title="y [cm]",
+                                 xaxis_showspikes=False,yaxis_showspikes=False),
+                      showlegend=False,
                       )
 
     return fig
@@ -92,21 +96,20 @@ tab_3d_layout = html.Div([
     html.H3('3D TC distribution'),
     html.Div([
         html.Div([dcc.Dropdown(['photons', 'electrons', 'pions'], 'photons', id='particle')], style={'width':'15%'}),
-        html.Div([dcc.Dropdown(['trigger cells', 'cluster'], 'trigger cells', id='tc-cl')], style={"margin-left": "15px", 'width':'15%'}),
-        html.Div(id='space-slider', style={'width':'15%'}),
+        html.Div([dcc.Dropdown(['trigger cells', 'cluster trigger cells'], 'trigger cells', id='tc-cl')], style={"margin-left": "15px", 'width':'15%'}),
+        html.Div(id='space-slider', style={'width':'20%'}),
         html.Div([dcc.Dropdown(['display the entire event', 'layer selection'], 'layer selection', id='layer_sel')], style={"margin-left": "15px", 'width':'15%'}),
     ], style={'display': 'flex', 'flex-direction': 'row'}),
     html.Div([
-        html.Div(["Threshold in [MIP Pt]: ", dcc.Input(id='mip', value=1, type='number', step=0.1)], style={'padding': 10}),
+        html.Div(["Threshold in [mip\u209C]: ", dcc.Input(id='mip', value=1, type='number', step=0.1)], style={'padding': 10}),
         html.Div(["Select manually an event: ", dcc.Input(id='event', value=None, type='number')], style={'padding': 10, 'flex': 1}),
         html.Div(id='slider-container', children=html.Div(id='out_slider', style={'width':'95%'}), style= {'display': 'block', 'width':'30%'}),
-        html.Div(id='space-slider', style={'width':'30%'}),
+        html.Div(id='space-slider', style={'width':'25%'}),
     ], style={'display': 'flex', 'flex-direction': 'row'}),
     html.Br(),
     html.Div([
         html.Button(children='Random event', id='event-val', n_clicks=0),
         html.Button(children='Submit selected event', id='submit-val', n_clicks=0),
-        html.Button(children='Submit selected layer(s)', id='submit-layer', n_clicks=0),
         html.Div(id='event-display', style={'display':'inline-block', "margin-left": "15px"}),
         html.Div(id='which', style={'display':'inline-block', "margin-left": "15px"}),
     ]),
@@ -124,7 +127,7 @@ tab_layer_layout = html.Div([
         html.Div(id='layer_slider_container', style={'width':'30%'}),
     ], style={'display': 'flex', 'flex-direction': 'row'}),
     html.Div([
-        html.Div(["Threshold in [MIP Pt]: ", dcc.Input(id='mip', value=1, type='number', step=0.1)], style={'padding': 10}),
+        html.Div(["Threshold in [mip\u209C]: ", dcc.Input(id='mip', value=1, type='number', step=0.1)], style={'padding': 10}),
         html.Div(["Select manually an event: ", dcc.Input(id='event', value=None, type='number')], style={'padding': 10, 'flex': 1}),
     ], style={'display': 'flex', 'flex-direction': 'row'}),
     html.Br(),
