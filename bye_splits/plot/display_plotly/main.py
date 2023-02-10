@@ -35,30 +35,40 @@ def render_content(page = '3D view'):
     elif page == 'Layer view':
         return processing.tab_layer_layout
 
+@app.callback([Output('event-display','children'),Output('out_slider','children'), 
+              Output('dataframe','data'), Output('event','value')],
+             [Input('particle','value'),Input('tc-cl','value'),
+              Input('event-val','n_clicks'),Input('submit-val','n_clicks')],
+             [State('event','value')])
+def update_event(particle, cluster, n_click, submit_event, event):
+    button_clicked = ctx.triggered_id
 
-@app.callback(Output('event-display', 'children'), Output('out_slider', 'children'), Output('dataframe', 'data'),
-             [Input('particle', 'value'),  Input('tc-cl', 'value'),    Input('event-val', 'n_clicks'),
-              Input('submit-val', 'n_clicks'), Input('mip', 'value'),  State('event', 'value')])
-def update_event(particle, cluster, n_clicks, submit, mip, event):
-    df, event  = processing.get_data(event, particle)
+    if button_clicked == 'event-val':
+        df, event  = processing.get_data(event=None, particles=particle)
+    else:
+        df, event  = processing.get_data(event, particle)
 
-    slider = dcc.RangeSlider(df['layer'].min(),df['layer'].max(), value=[df['layer'].min(), df['layer'].max()], step=None,
-                       marks={int(layer) : {"label": str(layer)} for each, layer in enumerate(sorted(df['layer'].unique()))}, 
-                       id = 'slider-range')
-    return u'Event {} selected'.format(event), slider, df.reset_index().to_json(date_format='iso')
+    slider = dcc.RangeSlider(df['layer'].min(),df['layer'].max(), 
+                             value=[df['layer'].min(), df['layer'].max()], step=None,
+                             marks={int(layer) : {"label": str(layer)} for each, 
+                                    layer in enumerate(sorted(df['layer'].unique()))}, 
+                             id = 'slider-range')
+    return u'Event {} selected'.format(event), slider, df.reset_index().to_json(date_format='iso'), ''
+
 
 @app.callback(Output('graph', 'figure'),  Output('slider-container', 'style'),
-              [Input('submit-layer', 'n_clicks'), Input('dataframe', 'data')], 
-              [Input('layer_sel', 'value'), State('tc-cl', 'value'), State('mip', 'value'), 
-               State('slider-range', 'value'), State('page', 'value')])
-def make_graph(submit, data, layer, cluster, mip, slider_value, page):
+              [Input('dataframe', 'data'), Input('slider-range', 'value'), 
+               Input('layer_sel', 'value'), Input('mip', 'value')],
+              [State('tc-cl', 'value')])
+def make_graph(data, slider_value, layer, mip, cluster):
+    assert float(mip) >= 0.5, 'mip\u209C value out of range. Minimum value 0.5 !'
     df = pd.read_json(data, orient='records')
     df_sel = df[df.mipPt >= mip]
     
     if layer == 'layer selection':
         df_sel = df_sel[(df_sel.layer >= slider_value[0]) & (df_sel.layer <= slider_value[1])]
     
-    if cluster == 'cluster':
+    if cluster == 'cluster trigger cells':
         df_no_cluster = df_sel[df_sel.tc_cluster_id == 0]
         df_cluster    = df_sel[df_sel.tc_cluster_id != 0]
         fig = processing.set_3dfigure(df_cluster)

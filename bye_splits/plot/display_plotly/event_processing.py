@@ -58,7 +58,9 @@ def set_3dfigure(df):
                       scene_aspectmode='manual',
                       scene_aspectratio=dict(x=1, y=1, z=1),
                       scene=dict(xaxis=axis, yaxis=axis, zaxis=axis,
-                                 xaxis_title="x [cm]",yaxis_title="y [cm]",zaxis_title="z [cm]"),
+                                 xaxis_title="z [cm]",yaxis_title="y [cm]",zaxis_title="x [cm]",
+                                 xaxis_showspikes=False,yaxis_showspikes=False,zaxis_showspikes=False),
+                      showlegend=False,
                       ) 
 
     return fig
@@ -76,7 +78,9 @@ def set_2dfigure(df):
                       scene_aspectmode='manual',
                       scene_aspectratio=dict(x=1, y=1),
                       scene=dict(xaxis=axis, yaxis=axis, 
-                                 xaxis_title="x [cm]",yaxis_title="y [cm]"),
+                                 xaxis_title="x [cm]",yaxis_title="y [cm]",
+                                 xaxis_showspikes=False,yaxis_showspikes=False),
+                      showlegend=False,
                       )
 
     return fig
