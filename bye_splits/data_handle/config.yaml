@@ -14,7 +14,8 @@ varEvents:
     l:  'good_tc_layer'
     cv: 'good_tc_cellu'
     cu: 'good_tc_cellv'
-    en: 'good_tc_mipPt'
+    en: 'good_tc_energy'
+    mipt: 'good_tc_mipPt'
     cluster: 'good_tc_cluster_id'
 
 varGeometry:
