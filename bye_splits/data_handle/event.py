@@ -79,7 +79,6 @@ class EventData(BaseData):
         adir = 'FloatingpointMixedbcstcrealsig4DummyHistomaxxydr015GenmatchGenclustersntuple'
         atree = 'HGCalTriggerNtuple'
 
-        print(self.inpath)
         with up.open(str(self.inpath), array_cache='550 MB', num_workers=8) as f:
             # print(tree.show())
             tree = f[adir + '/' + atree]

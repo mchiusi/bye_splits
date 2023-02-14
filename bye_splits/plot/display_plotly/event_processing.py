@@ -42,7 +42,7 @@ def get_data(event, particles):
     ds_ev.rename(columns={'good_tc_waferu':'waferu', 'good_tc_waferv':'waferv',
                           'good_tc_cellu':'triggercellu', 'good_tc_cellv':'triggercellv',
                           'good_tc_layer':'layer', 'good_tc_mipPt':'mipPt',
-                          'good_tc_cluster_id':'tc_cluster_id'},
+                          'good_tc_energy':'energy', 'good_tc_cluster_id':'tc_cluster_id'},
                 inplace=True)
     ds_ev = pd.merge(left=ds_ev, right=ds_geom, how='inner',
                      on=['layer', 'waferu', 'waferv', 'triggercellu', 'triggercellv'])
