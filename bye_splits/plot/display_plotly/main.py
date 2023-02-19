@@ -47,7 +47,7 @@ def update_event(particle, n_click, submit_event, event):
     if button_clicked != 'submit-val':
         df, event  = processing.get_data(event=None, particles=particle)
     else:
-        assert event == None, '''Please select manually an event or click on 'Random event'.'''
+        assert event != None, '''Please select manually an event or click on 'Random event'.'''
         df, event  = processing.get_data(event, particle)
 
     slider = dcc.RangeSlider(df['layer'].min(),df['layer'].max(), 

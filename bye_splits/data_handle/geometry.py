@@ -254,18 +254,22 @@ class GeometryData(BaseData):
         if not os.path.exists(self.outpath) or self.reprocess:
             if self.logger is not None:
                 self.logger.info('Storing geometry data...')
-            self.store()
+            ds = self.store()
+            ds = ak.from_parquet(self.outpath)
+            ds = self.filter_columns(ds)
+            ds = ak.to_dataframe(ds)
+            ds = self.region_selection(ds, region)
+            self.dataset = self.prepare_for_display(ds, library)
 
         if self.dataset is None: #use cached dataset
             if self.logger is not None:
                 self.logger.info('Retrieving geometry data...')
             ds = ak.from_parquet(self.outpath)
             ds = self.filter_columns(ds)
-            self.dataset = ak.to_dataframe(ds)
-            
-        self.dataset = self.region_selection(self.dataset, region)
-        self.dataset = self.prepare_for_display(self.dataset, library)
-        
+            ds = ak.to_dataframe(ds)
+            ds = self.region_selection(ds, region)
+            self.dataset = self.prepare_for_display(ds, library)
+
         return self.dataset
 
     def rotate(self, angle, x, y, cx, cy):
@@ -306,4 +310,4 @@ class GeometryData(BaseData):
         if os.path.exists(self.outpath):
             os.remove(self.outpath)
         ak.to_parquet(ds, self.outpath)
-        self.dataset = ak.to_dataframe(ds)
+        return ds
