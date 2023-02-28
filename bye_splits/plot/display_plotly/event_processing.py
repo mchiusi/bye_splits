@@ -34,7 +34,7 @@ axis = dict(backgroundcolor="rgba(0,0,0,0)", gridcolor="white", showbackground=T
 
 def get_data(event, particles):
     ds_geom = geom_data.provide(library='plotly')
-
+    
     if event is None:
     	event = data_particle[particles].provide_event_numbers()
     
@@ -148,7 +148,7 @@ tab_layer_layout = dbc.Container([html.Div([
         html.Div(id='layer_slider_container', style={'width':'30%'}),
     ], style={'display': 'flex', 'flex-direction': 'row'}),
     html.Div([
-        html.Div(["Threshold in [MIP Pt]: ", dcc.Input(id='mip', value=1, type='number', step=0.1)], style={'padding': 10}),
+        html.Div(["Threshold in [mip\u209C]: ", dcc.Input(id='mip', value=1, type='number', step=0.1)], style={'padding': 10}),
         html.Div(["Select manually an event: ", dcc.Input(id='event', value=None, type='number')], style={'padding': 10, 'flex': 1}),
     ], style={'display': 'flex', 'flex-direction': 'row'}),
     html.Br(),

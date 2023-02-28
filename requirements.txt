@@ -106,6 +106,6 @@ webencodings==0.5.1
 websocket-client==1.4.2
 Werkzeug==2.2.2
 wheel==0.38.4
-xrootd==5.5.1
+#xrootd==5.5.1
 xyzservices==2022.9.0
 zipp==3.11.0

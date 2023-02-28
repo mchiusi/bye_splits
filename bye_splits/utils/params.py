@@ -16,8 +16,8 @@ MinROverZ = 0.076
 MaxROverZ = 0.58
 MinPhi = -np.pi
 MaxPhi = +np.pi
-LocalDataFolder = 'data/new_algos'
-EOSDataFolder = '/eos/user/b/bfontana/FPGAs/new_algos/'
+LocalDataFolder = ''
+EOSDataFolder = '/eos/user/m/mchiusi/visualization/'#'/eos/user/b/bfontana/FPGAs/new_algos/'
 
 viz_kw = {
     'DataPath': Path(EOSDataFolder),
