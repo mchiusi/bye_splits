@@ -35,7 +35,7 @@ def produce_3dplot(df, opacity=1, surfaceaxis=0):
                              cmin = df.mipPt.min(),
                              cmax = df.mipPt.max(),
                              showscale=True,
-                             colorbar=dict(title="[mip\u209c]", ticks="outside", x=0.8)
+                             colorbar=dict(title=dict(text="[mip\u209c]", side="right"), ticks="outside", x=1)
                          ))
         listdata.append(datum)
     return listdata
@@ -48,5 +48,19 @@ def produce_2dplot(df, opacity=1):
         y1 = np.append(i[1],i[1][0])
         datum = go.Scatter(x=x1, y=y1, opacity=opacity,mode="lines",fill='toself', fillcolor=i[4],
                           line_color='black',marker_line_color="black",  text=('Energy: '+str(round(i[5],2))))
+        listdata.append(datum)
+    return listdata
+
+
+def plot_modules(df):
+    array_data = df[['hex_x','hex_y','z']].to_numpy()
+    listdata = []
+    for j,i in enumerate(array_data):
+        x1 = np.append(i[0],i[0][0])
+        y1 = np.append(i[1],i[1][0])
+        z1 = np.array(int(len(x1)) * [i[2]])
+        datum = go.Scatter3d(x=z1, y=y1, z=x1, mode="lines", 
+                            marker=dict(color="black"),
+                            )
         listdata.append(datum)
     return listdata
