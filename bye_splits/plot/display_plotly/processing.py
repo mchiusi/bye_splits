@@ -40,7 +40,7 @@ class Processing():
         return random.choice(self.list_events)
 
     def filestore(self, particles, pu):
-        self.filename = self.cfg["clusterStudies"]["localDir"] + self.cfg["3Ddisplay"][f"PU{pu}"][particles] + ".hdf5"
+        self.filename = self.cfg["3Ddisplay"][f"PU{pu}"][particles] + '.hdf5'
 
     def get_data(self, pars, particles, pu_str, event = ''):
         pu = re.search(r'(\d+) pileup', pu_str).group(1)
@@ -127,7 +127,7 @@ class Processing():
     def layout(self, **options):
         return dbc.Container([html.Div([
             html.Div([
-                html.Div([dcc.Dropdown(['photons', 'electrons', 'pions'], 'photons', id='particle')], style={'width':'12%'}),
+                html.Div([dcc.Dropdown(['photons', 'electrons', 'pions'], 'pions', id='particle')], style={'width':'12%'}),
                 html.Div([dcc.Dropdown(['0 pileup', '200 pileup'], '0 pileup', id='pu')], style={'width':'12%', "margin-left": "10px"}),
                 html.Div([dbc.Checklist(options, [], inline=True, id='checkbox', switch=True)], style={"margin-left": "15px"}),
                 html.Div(id='slider-container', children=html.Div(id='out_slider', style={'width':'99%'}), style= {'display': 'block', 'width':'55%'}),

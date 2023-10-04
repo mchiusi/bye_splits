@@ -56,11 +56,11 @@ def merge_cluster_data_with_event(df_event_tc, cluster_data, index):
     """ data processed from clustering step is merged with original data events
         to get infomation about the non-clusterised TCs """
     merged_data = {}
-    
+  
     for coef in cluster_data.keys():
         merged_data[coef] = pd.merge(
             left=cluster_data[coef][index],
-            right=df_event_tc[~df_event_tc['tc_layer'].isin(cfg['selection']['disconnectedTriggerLayers'])],
+            right=df_event_tc[df_event_tc.tc_layer % 2 != 0],
             on=['tc_wu', 'tc_wv', 'tc_cu', 'tc_cv', 'tc_layer'],
             how='outer'
         ).fillna(cluster_data[coef][index]['seed_idx'].max() + 1)

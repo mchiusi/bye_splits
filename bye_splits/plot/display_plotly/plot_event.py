@@ -14,15 +14,14 @@ from bye_splits.tasks.coarse_seeding import cs_dummy_calculator
 def geom_selection(df_dict):
     gen_info = next(reversed(df_dict.values()))
 
-    radius_gen = 40  # radius to select a specific region around the gen
+    radius_gen = 32  # radius to select a specific region around the gen
     for chain in list(df_dict.keys())[:-1]:
         for coef in list(df_dict[chain].keys()):
             eta = gen_info['gen_eta'].values[0]
             phi = gen_info['gen_phi'].values[0]
             x_gen, y_gen = sph2cart(eta, phi)
 
-            mask = np.sqrt((x_gen - df_dict[chain][coef]['tc_x'])**2 + \
-                           (y_gen - df_dict[chain][coef]['tc_y'])**2) < radius_gen
+            mask = np.sqrt((x_gen - (df_dict[chain][coef]).tc_x)**2 + (y_gen - df_dict[chain][coef].tc_y)**2) < radius_gen
             df_dict[chain][coef] = df_dict[chain][coef][mask].reset_index(drop=True)
     
     return df_dict

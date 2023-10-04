@@ -39,14 +39,14 @@ app.layout = html.Div([
 
 @app.callback(
     Output('page-content', 'children'),
-    [Input('3D view', 'n_clicks'), Input('Layer view', 'n_clicks')]
+    Input('3D view', 'n_clicks') #, Input('Layer view', 'n_clicks')]
 )
-def render_content(*args):
-    button_id = ctx.triggered_id
-    if button_id == '3D view' or not ctx.triggered:
-        return process.layout(page='3D')
-    elif button_id == 'Layer view':
-        return process.layout(page='2D')
+def render_content(n_clicks):
+    #button_id = ctx.triggered_id
+    #if button_id == '3D view' or not ctx.triggered:
+    return process.layout(page='3D')
+    #elif button_id == 'Layer view':
+    #    return process.layout(page='2D')
 
 
 @app.callback(
@@ -87,9 +87,10 @@ def update_event(particle, pu, n_click, submit_event, event, page):
 
     df_dict = {key:val for key, val in df_dict.items() if key != 'gen'}
     json_df_dict = {chain: {coef: df.to_json() for coef, df in v.items()} for chain, v in df_dict.items()}
-    return ('Event '+ event +' selected. Gen Particle η={:.2f}, ϕ={:.2f}, '
-            .format(gen_info['gen_eta'].values[0],gen_info['gen_phi'].values[0])+ 'p$_{T}$'+'={:.2f} GeV'
-            .format(gen_info['gen_pt'].values[0]), checkbox, slider, json_df_dict, None)
+    return ('Event ' + event + ' selected. Gen Particle η={:.2f}, ϕ={:.2f}, '
+            .format(gen_info['gen_eta'].values[0], gen_info['gen_phi'].values[0]) +'p$_{T}$' + '={:.2f} GeV'
+            .format(common.get_pt(int(gen_info['gen_en'].values[0]),gen_info['gen_eta'].values[0])),
+            checkbox, slider, json_df_dict, None)
 
 @app.callback(
     [

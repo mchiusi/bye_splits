@@ -168,14 +168,14 @@ class EventData(BaseData):
                 else:
                     break
             
-            threshold = 0.1
-            try:
-                if len(data) / total_events < threshold:
-                    print(f'[WARNING] Function select() in event.py\nThe number of events in the Parquet file is less than {threshold * 100}% compared to the events in the ROOT file.')
-            except ZeroDivisionError:
-                print("The input file is empty.")
+            # threshold = 0.1
+            # try:
+            #     if len(data) / total_events < threshold:
+            #         print(f'[WARNING] Function select() in event.py\nThe number of events in the Parquet file is less than {threshold * 100}% compared to the events in the ROOT file.')
+            # except ZeroDivisionError:
+            #     print("The input file is empty.")
 
-            #data = tree.arrays(filter_name='/' + '|'.join(allvars) + '/', entry_stop=5000, library='ak')
+            data = tree.arrays(filter_name='/' + '|'.join(allvars) + '/', entry_stop=60, library='ak')
         # data[self.var.v] = data.waferv
         # data[self.newvar.vs] = -1 * data.waferv
         # data[self.newvar.c] = "#8a2be2"

@@ -109,7 +109,7 @@ def get_data_reco_chain_start(nevents=500, reprocess=False, tag='chain', particl
         "good_genpart_exeta" : "gen_eta",
         "good_genpart_exphi" : "gen_phi",
         "good_genpart_energy": "gen_en",
-        "good_genpart_pt"    : "gen_pt",
+#        "good_genpart_pt"    : "gen_pt",
     }
     ds_gen = ds_all["gen"]
     ds_gen = ds_gen.rename(columns=gen_keep)
