@@ -81,7 +81,7 @@ def run_radii_chain(pars, particles, pu, coefs, event=None):
     tasks.seed.seed(pars, **seed_params)
 
     cluster_params = params.read_task_params("cluster")
-    cluster_data_default, _ = get_cluster_data(cluster_params, 'default', coefs, pars)
+    cluster_data_default, events_default = get_cluster_data(cluster_params, 'default', coefs, pars)
 
     # Coarse seeding chain
     fill_cs_params = params.read_task_params('cs')
@@ -91,18 +91,26 @@ def run_radii_chain(pars, particles, pu, coefs, event=None):
     tasks.seed_cs.seed_cs(pars, **seed_cs_params)
 
     cluster_params = params.read_task_params("cluster")
-    cluster_data_cs, events = get_cluster_data(cluster_params, 'cs', coefs, pars)
+    cluster_data_cs, events_cs = get_cluster_data(cluster_params, 'cs', coefs, pars)
 
     # Data unpacker
     dict_event = {}
-    
+    events = list(set(events_default).intersection(events_cs))
+    indices_default = []
+    indices_cs = []
+    for event in events:
+        index_default = events_default.index(event)
+        indices_default.append(index_default)
+        index_cs = events_cs.index(event)
+        indices_cs.append(index_cs)
+
     for index, ev in enumerate(events):
         dict_event[ev] = {}
         df_event_tc = df_tc[df_tc.event == ev][['tc_mipPt', 'tc_eta', 'tc_wu', 'tc_wv', 'tc_cu', 'tc_cv', 'tc_layer']]
         
         # Merge cluster data with event data
-        dict_event[ev]['default'] = merge_cluster_data_with_event(df_event_tc, cluster_data_default, index)
-        dict_event[ev]['cs'] = merge_cluster_data_with_event(df_event_tc, cluster_data_cs, index)
+        dict_event[ev]['default'] = merge_cluster_data_with_event(df_event_tc, cluster_data_default, indices_default[index])
+        dict_event[ev]['cs'] = merge_cluster_data_with_event(df_event_tc, cluster_data_cs, indices_cs[index])
 
     return dict_event, df_gen
 

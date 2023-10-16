@@ -27,7 +27,7 @@ io:
     pions:
       dir: hgcalTriggerNtuplizer
       tree: HGCalTriggerNtuple
-      file: /data_CMS/cms/ehle/L1HGCAL/PU0/pions/skims/skim_tightTC_dRxy_fullEta_new_pions_0PU_bc_stc_hadd.root
+      file: /eos/user/m/mchiusi/visualization/display3d/skim_tightTC_dRxy_hadd.root #/data_CMS/cms/ehle/L1HGCAL/PU0/pions/skims/skim_tightTC_dRxy_fullEta_new_pions_0PU_bc_stc_hadd.root
   PU200:
     photons:
       dir: FloatingpointMixedbcstcrealsig4DummyHistomaxxydr015GenmatchGenclustersntuple

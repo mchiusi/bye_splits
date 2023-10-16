@@ -15,7 +15,7 @@ def geom_selection(df_dict):
     gen_info = next(reversed(df_dict.values()))
 
     radius_gen = 40  # radius to select a specific region around the gen
-    for chain in df_dict.keys():
+    for chain in list(df_dict.keys())[:-1]:
         for coef in list(df_dict[chain].keys()):
             eta = gen_info['gen_eta'].values[0]
             phi = gen_info['gen_phi'].values[0]
@@ -144,7 +144,8 @@ def produce_plot(df, opacity, plot_type, discrete):
             cmin=df.tc_mipPt.min(),
             cmax=df.tc_mipPt.max(),
             showscale=True,
-            colorbar=dict(title=dict(text='Transverse mip', font=dict(size=16), side="right"), ticks="outside", x=1)
+            colorbar=dict(title=dict(text='Transverse mip momentum', font=dict(size=16), side="right"),
+                          ticks="outside", tickfont=dict(size=16), x=1)
         ))
         listdata.append(datum)
     return listdata

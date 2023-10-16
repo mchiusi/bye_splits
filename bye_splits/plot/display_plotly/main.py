@@ -72,7 +72,9 @@ def update_event(particle, pu, n_click, submit_event, event, page):
     button_clicked = ctx.triggered_id
     if button_clicked == 'submit-val':
         if event is None:  raise RuntimeError("Please select manually an event or click on 'Random event'.")
-    
+    if pu == '200 pileup' and particle != 'photons':
+        raise NotImplementedError("This ROOT file has not been produced yet.")
+ 
     df_dict, event = process.get_data(common.dot_dict(vars(args)), particle, pu, event)
     
     gen_info = next(reversed(df_dict.values()))
@@ -85,8 +87,9 @@ def update_event(particle, pu, n_click, submit_event, event, page):
 
     df_dict = {key:val for key, val in df_dict.items() if key != 'gen'}
     json_df_dict = {chain: {coef: df.to_json() for coef, df in v.items()} for chain, v in df_dict.items()}
-    event_selected_message = 'Event {} selected. Gen Particle (η={:.2f}, ϕ={:.2f}, p$_{{\\text{T}}}$={:.2f} GeV).'
-    return ('Event '+ event +' selected. Gen Particle η={:.2f}, ϕ={:.2f}, '.format(gen_info['gen_eta'].values[0],gen_info['gen_phi'].values[0])+ 'p$_{T}$'+'={:.2f} GeV'.format(gen_info['gen_pt'].values[0]), checkbox, slider, json_df_dict, None)
+    return ('Event '+ event +' selected. Gen Particle η={:.2f}, ϕ={:.2f}, '
+            .format(gen_info['gen_eta'].values[0],gen_info['gen_phi'].values[0])+ 'p$_{T}$'+'={:.2f} GeV'
+            .format(gen_info['gen_pt'].values[0]), checkbox, slider, json_df_dict, None)
 
 @app.callback(
     [
