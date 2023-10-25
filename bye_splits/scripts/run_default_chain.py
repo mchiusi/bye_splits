@@ -22,17 +22,7 @@ from tasks import validation
 import argparse
 import pandas as pd
 
-def run_default_chain(pars, user):
-    """Run the backend stage 2 reconstruction chain for a single event."""
-    df_out = None
-    collector = validation.Collector()
-    plotter = chain_plotter.ChainPlotter(chain_mode='default', user=user,
-                                         tag='NEV'+str(pars.nevents))
-    df_gen, df_cl, df_tc = get_data_reco_chain_start(nevents=pars.nevents,
-                                                     reprocess=True, tag="default_chain")
-
-    print("There are {} events in the input.".format(df_gen.shape[0]))
-
+def run_chain_steps(pars):
     if not pars.no_fill:
         fill_d = params.read_task_params("fill")
         tasks.fill.fill(pars, df_gen, df_cl, df_tc, **fill_d)
@@ -49,6 +39,20 @@ def run_default_chain(pars, user):
         valid_d = params.read_task_params('valid_seed_default')
         stats_out_seed = collector.collect_seed(pars, chain_mode='default', **valid_d)
         plotter.seed_plotter(stats_out_seed, pars)
+
+
+def run_default_chain(pars, user):
+    """Run the backend stage 2 reconstruction chain for a single event."""
+    df_out = None
+    collector = validation.Collector()
+    plotter = chain_plotter.ChainPlotter(chain_mode='default', user=user,
+                                         tag='NEV'+str(pars.nevents))
+    df_gen, df_cl, df_tc = get_data_reco_chain_start(nevents=pars.nevents,
+                                                     reprocess=True, tag="default_chain")
+
+    print("There are {} events in the input.".format(df_gen.shape[0]))
+
+    run_chain_steps(**pars)
 
     nparameters = 1
     for _ in range(nparameters):  # clustering optimization studies

@@ -71,14 +71,7 @@ def run_radii_chain(pars, particles, pu, coefs, event=None):
     df_gen, df_cl, df_tc = get_data_reco_chain_start(nevents=30, reprocess=False, particles=particles, pu=pu, event=event)
 
     # Default chain
-    fill_params = params.read_task_params("fill")
-    tasks.fill.fill(pars, df_gen, df_cl, df_tc, **fill_params)
-
-    smooth_params = params.read_task_params("smooth")
-    tasks.smooth.smooth(pars, **smooth_params)
-
-    seed_params = params.read_task_params("seed")
-    tasks.seed.seed(pars, **seed_params)
+    run_chain_steps(**pars)
 
     cluster_params = params.read_task_params("cluster")
     cluster_data_default, events_default = get_cluster_data(cluster_params, 'default', coefs, pars)
