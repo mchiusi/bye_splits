@@ -78,9 +78,9 @@ def skim(tn, inf, outf, particle, nevents, cfg):
     if cfg["selection"]["mipThreshold"]:
 	    mipThreshold = cfg["selection"]["mipThreshold"]
   
-    if nevents == -1: # RDataFrame.Range() does not work with multithreading
-        ROOT.EnableImplicitMT()
-        print("Multithreaded...")
+    # if nevents == -1: # RDataFrame.Range() does not work with multithreading
+    #     ROOT.EnableImplicitMT()
+    #     print("Multithreaded...")
 
     dataframe = ROOT.RDataFrame(tn, inf)
 
@@ -92,11 +92,15 @@ def skim(tn, inf, outf, particle, nevents, cfg):
     gen_v = gen_intv + gen_floatv + gen_floatv2
 
     # selection on generated particles (within each event)
-    pmap = {"photons": "22", "electrons": "11", "pions": "211"}
+    pmap = {"photons": "22", "electrons": "11", "pions": "-211"}
     condgen = ''.join(("genpart_gen != -1 && ",
                        "genpart_reachedEE == " + str(reachedEE),
-                       " && genpart_pid == abs(" + pmap[particle] + ")",
-                       " && genpart_exeta > 0"))
+                       " && genpart_pid == " + pmap[particle],
+                       # " && genpart_pid == abs(" + pmap[particle] + ")",
+                       " && genpart_exeta > 1.6",
+                       " && genpart_exeta < 2.8",
+                       " && genpart_exphi > 0.2",
+                       " && genpart_exphi < 1.8"))
 
     df = dataframe.Define("tmp_good_gens", condgen)
     for v in gen_v:
@@ -107,12 +111,12 @@ def skim(tn, inf, outf, particle, nevents, cfg):
 
     # trigger cells-related variables
     tc_uintv = ["tc_multicluster_id"]
-    tc_intv = ["tc_layer", "tc_cellu", "tc_cellv", "tc_waferu", "tc_waferv"]
+    tc_intv = ["tc_layer", "tc_cellu", "tc_cellv", "tc_waferu", "tc_waferv", "tc_subdet"]
     tc_floatv = ["tc_energy", "tc_mipPt", "tc_pt", "tc_x", "tc_y", "tc_z", "tc_phi", "tc_eta"]
     tc_v = tc_uintv + tc_intv + tc_floatv
     
     # selection on trigger cells (within each event)
-    condtc = "tc_zside == 1 && tc_mipPt > " + str(mipThreshold) + " && tc_layer <= 28"
+    condtc = "tc_zside == 1 && tc_mipPt > " + str(mipThreshold) # + " && tc_layer <= 28"
     dd1 = dfilt.Define("tmp_good_tcs", condtc)
     for v in tc_v:
 	    dd1 = dd1.Define("tmp_good_" + v, v + "[tmp_good_tcs]")
@@ -162,11 +166,14 @@ def skim(tn, inf, outf, particle, nevents, cfg):
 	    good_allvars.append("good_" + v)
 
     # store skimmed file
-    if nevents > 0:
+    if nevents == -1:
+        dd2.Snapshot(tn, outf, good_allvars)
+    elif nevents > 0:
         dd2.Range(0, nevents).Snapshot(tn, outf, good_allvars)
     else:
-	    dd2.Snapshot(tn, outf, good_allvars)
+        dd2.Snapshot(tn, outf, good_allvars)
 
+    print('OutputFolder:', outf)
     # dd2.Count().OnPartialResult(10, "[&log](auto c) { l << c << \" events processed\n\";}")
     
     # display event processing progress
@@ -174,12 +181,17 @@ def skim(tn, inf, outf, particle, nevents, cfg):
     # count.GetValue()
     
 if __name__ == "__main__":
+    ''' produce.py <nevents> <inputFile> <outputFile> '''
     import argparse
     parser = argparse.ArgumentParser(description='Skim ntuples')
     parser.add_argument('--particles', type=str, choices=('photons', 'electrons', 'pions'),
                         required=False, default='photons', help='particles to skim')
     parser.add_argument('--nevents', type=int, default=100,
                         required=False, help='number of events to skim')
+    parser.add_argument('--inputFile', type=str, default=None,
+                        required=False, help='root file in input')
+    parser.add_argument('--outputFile', type=str, default=None,
+                        required=False, help='skimmed root file in output')
     FLAGS = parser.parse_args()
 
     with open(params.CfgPath, 'r') as afile:
@@ -187,6 +199,10 @@ if __name__ == "__main__":
 
     dir_tree = os.path.join(cfg["io"]["production"][FLAGS.particles]["dir"],
                             cfg["io"]["production"][FLAGS.particles]["tree"])
-    infile = cfg["io"]["production"][FLAGS.particles]["infile"]
-    outfile = cfg["io"]["production"][FLAGS.particles]["outfile"]
+    
+    if FLAGS.inputFile and FLAGS.outputFile:
+        infile, outfile = FLAGS.inputFile, FLAGS.outputFile
+    else:
+        infile = cfg["io"]["production"][FLAGS.particles]["infile"]
+        outfile = cfg["io"]["production"][FLAGS.particles]["outfile"]
     skim(dir_tree, infile, outfile, FLAGS.particles, FLAGS.nevents, cfg)
